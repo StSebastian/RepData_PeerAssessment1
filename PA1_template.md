@@ -45,7 +45,7 @@ loading required packages:
 ```
 ## 
 ## The downloaded binary packages are in
-## 	C:\Users\Sebastian Stenzel\AppData\Local\Temp\Rtmp29xjNE\downloaded_packages
+## 	C:\Users\Sebastian Stenzel\AppData\Local\Temp\RtmpSAKf52\downloaded_packages
 ```
 
 ```r
@@ -234,7 +234,7 @@ creating new data frame *dataNaRm* where those missing values are replaced by th
 
 ```r
     hist(tapply(dataNaRm$steps,data$date,sum,na.rm=T),xlab="Number of Steps",
-    main="Distribution Total Number of Steps per Day")
+    main="Distribution Total Number of Steps per Day with Missing Values replaced")
 ```
 
 ![plot of chunk unnamed-chunk-16](figure/unnamed-chunk-16.png) 

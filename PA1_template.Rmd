@@ -30,22 +30,11 @@ loading required packages:
 ## What is mean total number of steps taken per day?
 
 computing distribution of total number of steps per day:
-```{r}
-    StepsPerDayTotal <- tapply(data$steps,data$date,sum,na.rm=T)
-```
 
 ```{r}
+    datazero <- data
     data<-data[complete.cases(data),]
     StepsPerDayTotal <- tapply(data$steps,data$date,sum,na.rm=T)
-```
-
-```{r}
-data1<- data[complete.cases(data),]
-StepsPerDayTotal <- aggregate(data1$steps ~ data1$date, as.Date(data1[, "date"]), FUN=sum)
-names(StepsPerDayTotal) <- c('date', 'steps')
-head(StepsPerDayTotal)
-StepsPerDayTotal<-StepsPerDayTotal$steps
-
 ```
 
 plotting the histogram:
@@ -87,14 +76,8 @@ The **mean** and **median** number of total steps over all days are **`r MEAN`**
 
 calculating average number of steps taken per time interval, averaged across all days:
 ```{r}
+    data <- datazero 
     IntervalAverages <- tapply(data$steps,data$interval,mean,na.rm=T)
-    data1<- data[complete.cases(data),]
-    IntervalAverages <- aggregate(data1$steps ~ data1$interval, list(data1$interval), FUN=mean)
-    nrow(IntervalAverages)
-    names(IntervalAverages) <- c('interval', 'steps')
-    int<-IntervalAverages$interval
-    IntervalAverages<-IntervalAverages$steps
-    names(IntervalAverages)<-int
 ```
 
 plotting time series data for the average number of steps taken per time interval:
@@ -262,22 +245,10 @@ Replacing missing values with mean interval values centralizes the distribution.
     dataNaRm$wkend[wkend] <- "weekend"
 ```
 
-* splitting data into weekday and weekend data frames:
+* computing-interval means for weekday and weekend data:
 ```{r}
-    WeekSepList <- split(dataNaRm,dataNaRm$wkend)
-```
-
-* computing-interval means for weekday and weekend data seperately:
-```{r}
-    weekday <- tapply(WeekSepList$weekday$steps,WeekSepList$weekday$interval,mean,na.rm=T)
-    weekend <- tapply(WeekSepList$weekend$steps,WeekSepList$weekend$interval,mean,na.rm=T)
-```
-
-* joining to one data frame:
-```{r}
-    weekday <- data.frame(steps=as.numeric(weekday),interval=as.numeric(names(weekday)),wkend="weekday")
-    weekend <- data.frame(steps=as.numeric(weekend),interval=as.numeric(names(weekend)),wkend="weekend")
-    WeekDayComparison <- rbind(weekday,weekend)
+    WeekDayComparison <- aggregate(dataNaRm$steps ~ dataNaRm$interval + dataNaRm$wkend, list(dataNaRm$interval), FUN=mean)
+    colnames(WeekDayComparison) <- c("interval", "wkend", "steps")
 ```
 
 * plotting the graph:
@@ -286,6 +257,4 @@ Replacing missing values with mean interval values centralizes the distribution.
     layout=c(1,2),xlab="Interval",ylab="Number of steps",panel=function(x,y,..){
     panel.xyplot(x,y,type="l")}) 
 ```
-
-aggregate(dataNaRm$steps ~ dataNaRm$interval + dataNaRm$wkend, list(dataNaRm$interval), FUN=mean)
 

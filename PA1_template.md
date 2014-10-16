@@ -45,7 +45,7 @@ loading required packages:
 ```
 ## 
 ## The downloaded binary packages are in
-## 	C:\Users\Sebastian Stenzel\AppData\Local\Temp\RtmpqgMhhS\downloaded_packages
+## 	C:\Users\Sebastian Stenzel\AppData\Local\Temp\RtmpCsy99e\downloaded_packages
 ```
 
 ```r
@@ -56,7 +56,10 @@ loading required packages:
 
 computing distribution of total number of steps per day:
 
+
 ```r
+    datazero <- data
+    data<-data[complete.cases(data),]
     StepsPerDayTotal <- tapply(data$steps,data$date,sum,na.rm=T)
 ```
 
@@ -78,9 +81,9 @@ computing and reporting mean **number** of **steps per day**:
 
 ```
 ## 2012-10-01 2012-10-02 2012-10-03 2012-10-04 2012-10-05 2012-10-06 
-##        NaN     0.4375    39.4167    42.0694    46.1597    53.5417 
+##         NA     0.4375    39.4167    42.0694    46.1597    53.5417 
 ## 2012-10-07 2012-10-08 2012-10-09 2012-10-10 2012-10-11 2012-10-12 
-##    38.2465        NaN    44.4826    34.3750    35.7778    60.3542 
+##    38.2465         NA    44.4826    34.3750    35.7778    60.3542 
 ## 2012-10-13 2012-10-14 2012-10-15 2012-10-16 2012-10-17 2012-10-18 
 ##    43.1458    52.4236    35.2049    52.3750    46.7083    34.9167 
 ## 2012-10-19 2012-10-20 2012-10-21 2012-10-22 2012-10-23 2012-10-24 
@@ -88,18 +91,19 @@ computing and reporting mean **number** of **steps per day**:
 ## 2012-10-25 2012-10-26 2012-10-27 2012-10-28 2012-10-29 2012-10-30 
 ##     8.6528    23.5347    35.1354    39.7847    17.4236    34.0938 
 ## 2012-10-31 2012-11-01 2012-11-02 2012-11-03 2012-11-04 2012-11-05 
-##    53.5208        NaN    36.8056    36.7049        NaN    36.2465 
+##    53.5208         NA    36.8056    36.7049         NA    36.2465 
 ## 2012-11-06 2012-11-07 2012-11-08 2012-11-09 2012-11-10 2012-11-11 
-##    28.9375    44.7326    11.1771        NaN        NaN    43.7778 
+##    28.9375    44.7326    11.1771         NA         NA    43.7778 
 ## 2012-11-12 2012-11-13 2012-11-14 2012-11-15 2012-11-16 2012-11-17 
-##    37.3785    25.4722        NaN     0.1424    18.8924    49.7882 
+##    37.3785    25.4722         NA     0.1424    18.8924    49.7882 
 ## 2012-11-18 2012-11-19 2012-11-20 2012-11-21 2012-11-22 2012-11-23 
 ##    52.4653    30.6979    15.5278    44.3993    70.9271    73.5903 
 ## 2012-11-24 2012-11-25 2012-11-26 2012-11-27 2012-11-28 2012-11-29 
 ##    50.2708    41.0903    38.7569    47.3819    35.3576    24.4688 
 ## 2012-11-30 
-##        NaN
+##         NA
 ```
+
 
 computing and reporting median **number** of **steps per day**:
 
@@ -136,26 +140,26 @@ computing and reporting median **number** of **steps per day**:
 calculating **mean** number of **total steps over all days**:
 
 ```r
-    MEAN <- mean(StepsPerDayTotal)
+    MEAN <- mean(StepsPerDayTotal,na.rm=T)
     MEAN
 ```
 
 ```
-## [1] 9354
+## [1] 10766
 ```
 
 calculating **median** number of **total steps over all days**:
 
 ```r
-    MEDIAN <- median(StepsPerDayTotal)
+    MEDIAN <- median(StepsPerDayTotal,na.rm=T)
     MEDIAN
 ```
 
 ```
-## [1] 10395
+## [1] 10765
 ```
 
-The **mean** and **median** number of total steps over all days are **9354.2295** and **10395**.
+The **mean** and **median** number of total steps over all days are **1.0766 &times; 10<sup>4</sup>** and **10765**.
 
 
 
@@ -164,6 +168,7 @@ The **mean** and **median** number of total steps over all days are **9354.2295*
 calculating average number of steps taken per time interval, averaged across all days:
 
 ```r
+    data <- datazero 
     IntervalAverages <- tapply(data$steps,data$interval,mean,na.rm=T)
 ```
 
@@ -393,3 +398,57 @@ Replacing missing values with mean interval values centralizes the distribution.
 ```
 
 ![plot of chunk unnamed-chunk-28](figure/unnamed-chunk-28.png) 
+
+#########
+
+
+
+* transforming date data to date variable:
+
+```r
+    dataNaRm <- transform(dataNaRm,date=as.Date(strptime(date,"%Y-%m-%d")))
+```
+
+* adding weekday column:
+
+```r
+    dataNaRm$wkday <- weekdays(dataNaRm$date)
+```
+
+* *optional replacing german with english weekday names:*
+
+```r
+    dataNaRm$wkday[dataNaRm$wkday=="Montag"] <- "Monday"
+    dataNaRm$wkday[dataNaRm$wkday=="Dienstag"] <- "Tuesday"
+    dataNaRm$wkday[dataNaRm$wkday=="Mittwoch"] <- "Wednesday"
+    dataNaRm$wkday[dataNaRm$wkday=="Donnerstag"] <- "Thursday"
+    dataNaRm$wkday[dataNaRm$wkday=="Freitag"] <- "Friday"
+    dataNaRm$wkday[dataNaRm$wkday=="Samstag"]<-"Saturday"
+    dataNaRm$wkday[dataNaRm$wkday=="Sonntag"]<-"Sunday"
+```
+
+* adding weekday/weekend column:
+
+```r
+    dataNaRm$wkend <- rep("weekday",nrow(dataNaRm))
+    wkend <- dataNaRm$wkday=="Saturday"|dataNaRm$wkday=="Sunday"
+    dataNaRm$wkend[wkend] <- "weekend"
+```
+
+* computing-interval means for weekday and weekend data:
+
+```r
+    WeekDayComparison <- aggregate(dataNaRm$steps ~ dataNaRm$interval + dataNaRm$wkend, list(dataNaRm$interval), FUN=mean)
+    colnames(WeekDayComparison) <- c("interval", "wkend", "steps")
+```
+
+* plotting the graph:
+
+```r
+    xyplot(WeekDayComparison$steps~WeekDayComparison$interval|WeekDayComparison$wkend,
+    layout=c(1,2),xlab="Interval",ylab="Number of steps",panel=function(x,y,..){
+    panel.xyplot(x,y,type="l")}) 
+```
+
+![plot of chunk unnamed-chunk-34](figure/unnamed-chunk-34.png) 
+

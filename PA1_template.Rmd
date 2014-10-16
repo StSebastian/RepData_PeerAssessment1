@@ -34,6 +34,20 @@ computing distribution of total number of steps per day:
     StepsPerDayTotal <- tapply(data$steps,data$date,sum,na.rm=T)
 ```
 
+```{r}
+    data<-data[complete.cases(data),]
+    StepsPerDayTotal <- tapply(data$steps,data$date,sum,na.rm=T)
+```
+
+```{r}
+data1<- data[complete.cases(data),]
+StepsPerDayTotal <- aggregate(data1$steps ~ data1$date, as.Date(data1[, "date"]), FUN=sum)
+names(StepsPerDayTotal) <- c('date', 'steps')
+head(StepsPerDayTotal)
+StepsPerDayTotal<-StepsPerDayTotal$steps
+
+```
+
 plotting the histogram:
 ```{r}
     hist(StepsPerDayTotal,xlab="Number of Steps",
@@ -46,6 +60,7 @@ computing and reporting mean **number** of **steps per day**:
     StepsPerDayMean 
 ```
 
+
 computing and reporting median **number** of **steps per day**:
 ```{r}
     StepsPerDayMedian <- tapply(data$steps,data$date,median,na.rm=T)
@@ -54,13 +69,13 @@ computing and reporting median **number** of **steps per day**:
 
 calculating **mean** number of **total steps over all days**:
 ```{r}
-    MEAN <- mean(StepsPerDayTotal)
+    MEAN <- mean(StepsPerDayTotal,na.rm=T)
     MEAN
 ```
 
 calculating **median** number of **total steps over all days**:
 ```{r}
-    MEDIAN <- median(StepsPerDayTotal)
+    MEDIAN <- median(StepsPerDayTotal,na.rm=T)
     MEDIAN
 ```
 
@@ -73,6 +88,13 @@ The **mean** and **median** number of total steps over all days are **`r MEAN`**
 calculating average number of steps taken per time interval, averaged across all days:
 ```{r}
     IntervalAverages <- tapply(data$steps,data$interval,mean,na.rm=T)
+    data1<- data[complete.cases(data),]
+    IntervalAverages <- aggregate(data1$steps ~ data1$interval, list(data1$interval), FUN=mean)
+    nrow(IntervalAverages)
+    names(IntervalAverages) <- c('interval', 'steps')
+    int<-IntervalAverages$interval
+    IntervalAverages<-IntervalAverages$steps
+    names(IntervalAverages)<-int
 ```
 
 plotting time series data for the average number of steps taken per time interval:
@@ -207,3 +229,63 @@ Replacing missing values with mean interval values centralizes the distribution.
     layout=c(1,2),xlab="Interval",ylab="Number of steps",panel=function(x,y,..){
     panel.xyplot(x,y,type="l")}) 
 ```
+
+#########
+
+
+
+* transforming date data to date variable:
+```{r}
+    dataNaRm <- transform(dataNaRm,date=as.Date(strptime(date,"%Y-%m-%d")))
+```
+
+* adding weekday column:
+```{r}
+    dataNaRm$wkday <- weekdays(dataNaRm$date)
+```
+
+* *optional replacing german with english weekday names:*
+```{r}
+    dataNaRm$wkday[dataNaRm$wkday=="Montag"] <- "Monday"
+    dataNaRm$wkday[dataNaRm$wkday=="Dienstag"] <- "Tuesday"
+    dataNaRm$wkday[dataNaRm$wkday=="Mittwoch"] <- "Wednesday"
+    dataNaRm$wkday[dataNaRm$wkday=="Donnerstag"] <- "Thursday"
+    dataNaRm$wkday[dataNaRm$wkday=="Freitag"] <- "Friday"
+    dataNaRm$wkday[dataNaRm$wkday=="Samstag"]<-"Saturday"
+    dataNaRm$wkday[dataNaRm$wkday=="Sonntag"]<-"Sunday"
+```
+
+* adding weekday/weekend column:
+```{r}
+    dataNaRm$wkend <- rep("weekday",nrow(dataNaRm))
+    wkend <- dataNaRm$wkday=="Saturday"|dataNaRm$wkday=="Sunday"
+    dataNaRm$wkend[wkend] <- "weekend"
+```
+
+* splitting data into weekday and weekend data frames:
+```{r}
+    WeekSepList <- split(dataNaRm,dataNaRm$wkend)
+```
+
+* computing-interval means for weekday and weekend data seperately:
+```{r}
+    weekday <- tapply(WeekSepList$weekday$steps,WeekSepList$weekday$interval,mean,na.rm=T)
+    weekend <- tapply(WeekSepList$weekend$steps,WeekSepList$weekend$interval,mean,na.rm=T)
+```
+
+* joining to one data frame:
+```{r}
+    weekday <- data.frame(steps=as.numeric(weekday),interval=as.numeric(names(weekday)),wkend="weekday")
+    weekend <- data.frame(steps=as.numeric(weekend),interval=as.numeric(names(weekend)),wkend="weekend")
+    WeekDayComparison <- rbind(weekday,weekend)
+```
+
+* plotting the graph:
+```{r}
+    xyplot(WeekDayComparison$steps~WeekDayComparison$interval|WeekDayComparison$wkend,
+    layout=c(1,2),xlab="Interval",ylab="Number of steps",panel=function(x,y,..){
+    panel.xyplot(x,y,type="l")}) 
+```
+
+aggregate(dataNaRm$steps ~ dataNaRm$interval + dataNaRm$wkend, list(dataNaRm$interval), FUN=mean)
+

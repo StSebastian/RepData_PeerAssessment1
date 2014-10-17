@@ -1,7 +1,6 @@
 # Reproducible Research: Peer Assessment 1
 
 
-
 ## Loading and preprocessing the data
 
 setting the directory:
@@ -29,11 +28,18 @@ loading required packages:
 
 ## What is mean total number of steps taken per day?
 
-computing distribution of total number of steps per day:
-
+making copy of original data (for later computation of imputing missing values):
 ```{r}
     datazero <- data
+```
+
+excluding NA-entries (otherwise days with NA entries only get the value of "0" instead of "NA" in the following computation):
+```{r}
     data<-data[complete.cases(data),]
+```
+
+computing distribution of total number of steps per day:
+```{r}
     StepsPerDayTotal <- tapply(data$steps,data$date,sum,na.rm=T)
 ```
 
@@ -82,8 +88,8 @@ calculating average number of steps taken per time interval, averaged across all
 
 plotting time series data for the average number of steps taken per time interval:
 ```{r}
-    plot(x=names(IntervalAverages),y=IntervalAverages,type="l", xlab="time inteval", 
-    ylab="number of steps", main="Number of Steps Averaged per Time Interval")
+    plot(x=names(IntervalAverages),y=IntervalAverages,type="l", xlab="Time Inteval", 
+    ylab="Number of Steps", main="Number of Steps Averaged per Time Interval")
 ```
 
 computing the maximum:
@@ -125,96 +131,53 @@ creating new data frame *dataNaRm* where those missing values are replaced by th
 
 ### Ploting the histogram with the *new* data
 
+histogram with new (NA-imputed) data compared to histogram with old (NA-removed) data for comparison
 ```{r}
-    hist(tapply(dataNaRm$steps,data$date,sum,na.rm=T),xlab="Number of Steps",
-    main="Distribution Total Number of Steps per Day with Missing Values replaced")
+    ## new hist (NA-imputed)
+    hist(tapply(dataNaRm$steps,dataNaRm$date,sum,na.rm=T),xlab="Number of Steps",
+    main="Distribution Total Number of Steps per Day with Missing Values replaced",
+    col = "blue",breaks = 10)
+    
+    ## old hist (NA-removed)
+    data<-datazero[complete.cases(datazero),]
+    hist(tapply(data$steps,data$date,sum,na.rm=T),xlab="Number of Steps",
+    main="Distribution Total Number of Steps per Day with Missing Values replaced",add =     
+      T, col = "lightblue",breaks = 10)
+    
+    ## adding legend
+    legend("right",legend = c("change by NA-imputing")
+    ,fill   = c("blue")
+      )
 ```
 
 computing and reporting the **new** mean number of **steps per day**:
 ```{r}
-    StepsPerDayMean <- tapply(dataNaRm$steps,data$date,mean,na.rm=T)
+    StepsPerDayMean <- tapply(dataNaRm$steps,dataNaRm$date,mean,na.rm=T)
     StepsPerDayMean 
 ```
 
 computing and reporting the **new** median number of **steps per day**:
 ```{r}
-    StepsPerDayMedian <- tapply(dataNaRm$steps,data$date,median,na.rm=T)
+    StepsPerDayMedian <- tapply(dataNaRm$steps,dataNaRm$date,median,na.rm=T)
     StepsPerDayMedian
 ```
 
 calculating the **new** mean number of **total steps over all days**:
 ```{r}
-    MEAN <- mean(tapply(dataNaRm$steps,data$date,sum,na.rm=T))
+    MEAN <- mean(tapply(dataNaRm$steps,dataNaRm$date,sum,na.rm=T))
     MEAN
 ```
 
 calculating the **new** median number of **total steps over all days**:
 ```{r}
-    MEDIAN <- median(tapply(dataNaRm$steps,data$date,sum,na.rm=T))
+    MEDIAN <- median(tapply(dataNaRm$steps,dataNaRm$date,sum,na.rm=T))
     MEDIAN
 ```
 
-Replacing missing values with mean interval values centralizes the distribution. This results in narrower distribution (see histogram) and a mean closer/equal to the median
+Replacing missing values with mean interval values centralizes the distribution. In the earlier analysis (no imputing) a day contained either NA observations only or non. Hence these days were not included ealier but now they are and they all have the value 10766.19 because it is the sum of all interval averages. This results in mean and media of **`r MEAN`** and **`r MEDIAN`**. 
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
-
-
-* transforming date data to date variable:
-```{r}
-    data <- transform(data,date=as.Date(strptime(date,"%Y-%m-%d")))
-```
-
-* adding weekday column:
-```{r}
-    data$wkday <- weekdays(data$date)
-```
-
-* *optional replacing german with english weekday names:*
-```{r}
-    data$wkday[data$wkday=="Montag"] <- "Monday"
-    data$wkday[data$wkday=="Dienstag"] <- "Tuesday"
-    data$wkday[data$wkday=="Mittwoch"] <- "Wednesday"
-    data$wkday[data$wkday=="Donnerstag"] <- "Thursday"
-    data$wkday[data$wkday=="Freitag"] <- "Friday"
-    data$wkday[data$wkday=="Samstag"]<-"Saturday"
-    data$wkday[data$wkday=="Sonntag"]<-"Sunday"
-```
-
-* adding weekday/weekend column:
-```{r}
-    data$wkend <- rep("weekday",nrow(data))
-    wkend <- data$wkday=="Saturday"|data$wkday=="Sunday"
-    data$wkend[wkend] <- "weekend"
-```
-
-* splitting data into weekday and weekend data frames:
-```{r}
-    WeekSepList <- split(data,data$wkend)
-```
-
-* computing-interval means for weekday and weekend data seperately:
-```{r}
-    weekday <- tapply(WeekSepList$weekday$steps,WeekSepList$weekday$interval,mean,na.rm=T)
-    weekend <- tapply(WeekSepList$weekend$steps,WeekSepList$weekend$interval,mean,na.rm=T)
-```
-
-* joining to one data frame:
-```{r}
-    weekday <- data.frame(steps=as.numeric(weekday),interval=as.numeric(names(weekday)),wkend="weekday")
-    weekend <- data.frame(steps=as.numeric(weekend),interval=as.numeric(names(weekend)),wkend="weekend")
-    WeekDayComparison <- rbind(weekday,weekend)
-```
-
-* plotting the graph:
-```{r}
-    xyplot(WeekDayComparison$steps~WeekDayComparison$interval|WeekDayComparison$wkend,
-    layout=c(1,2),xlab="Interval",ylab="Number of steps",panel=function(x,y,..){
-    panel.xyplot(x,y,type="l")}) 
-```
-
-#########
-
 
 
 * transforming date data to date variable:
@@ -247,14 +210,15 @@ Replacing missing values with mean interval values centralizes the distribution.
 
 * computing-interval means for weekday and weekend data:
 ```{r}
-    WeekDayComparison <- aggregate(dataNaRm$steps ~ dataNaRm$interval + dataNaRm$wkend, list(dataNaRm$interval), FUN=mean)
+    WeekDayComparison <- aggregate(dataNaRm$steps ~ dataNaRm$interval + dataNaRm$wkend, 
+                                   list(dataNaRm$interval), FUN=mean)
     colnames(WeekDayComparison) <- c("interval", "wkend", "steps")
 ```
 
 * plotting the graph:
 ```{r}
     xyplot(WeekDayComparison$steps~WeekDayComparison$interval|WeekDayComparison$wkend,
-    layout=c(1,2),xlab="Interval",ylab="Number of steps",panel=function(x,y,..){
+    layout=c(1,2),xlab="Interval",ylab="Number of Steps",panel=function(x,y,..){
     panel.xyplot(x,y,type="l")}) 
 ```
 

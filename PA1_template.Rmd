@@ -174,7 +174,7 @@ calculating the **new** median number of **total steps over all days**:
     MEDIAN
 ```
 
-Replacing missing values with mean interval values centralizes the distribution. In the earlier analysis (no imputing) a day contained either NA observations only or non. Hence these days were not included ealier but now they are and they all have the value 10766.19 because it is the sum of all interval averages. This results in mean and media of **`r MEAN`** and **`r MEDIAN`**. 
+Replacing missing values with mean interval values centralizes the distribution. In the earlier analysis (no imputing) a day contained either NA observations only or none. Hence these days were not included ealier but now they are and they all have the value 10766.19 because it is the sum of all interval averages. This results in mean and media of **`r MEAN`** and **`r MEDIAN`**. 
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
@@ -222,3 +222,4 @@ Replacing missing values with mean interval values centralizes the distribution.
     panel.xyplot(x,y,type="l")}) 
 ```
 
+Obviously during the week there is a high activitiy around 9 am when people are presumably on their way to work. The distribution for weekend activity in contrast in rather smooth in  comparison.

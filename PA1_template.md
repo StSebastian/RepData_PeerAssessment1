@@ -44,7 +44,7 @@ loading required packages:
 ```
 ## 
 ## The downloaded binary packages are in
-## 	C:\Users\Sebastian Stenzel\AppData\Local\Temp\RtmpiA0Dqa\downloaded_packages
+## 	C:\Users\Sebastian Stenzel\AppData\Local\Temp\RtmpSYV47V\downloaded_packages
 ```
 
 ```r
@@ -352,7 +352,7 @@ calculating the **new** median number of **total steps over all days**:
 ## [1] 10766
 ```
 
-Replacing missing values with mean interval values centralizes the distribution. In the earlier analysis (no imputing) a day contained either NA observations only or non. Hence these days were not included ealier but now they are and they all have the value 10766.19 because it is the sum of all interval averages. This results in mean and media of **1.0766 &times; 10<sup>4</sup>** and **1.0766 &times; 10<sup>4</sup>**. 
+Replacing missing values with mean interval values centralizes the distribution. In the earlier analysis (no imputing) a day contained either NA observations only or none. Hence these days were not included ealier but now they are and they all have the value 10766.19 because it is the sum of all interval averages. This results in mean and media of **1.0766 &times; 10<sup>4</sup>** and **1.0766 &times; 10<sup>4</sup>**. 
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
@@ -408,3 +408,4 @@ Replacing missing values with mean interval values centralizes the distribution.
 
 ![plot of chunk unnamed-chunk-28](figure/unnamed-chunk-28.png) 
 
+Obviously during the week there is a high activitiy around 9 am when people are presumably on their way to work. The distribution for weekend activity in contrast in rather smooth in  comparison.

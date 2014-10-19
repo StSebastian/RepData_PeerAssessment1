@@ -44,7 +44,7 @@ loading required packages:
 ```
 ## 
 ## The downloaded binary packages are in
-## 	C:\Users\Sebastian Stenzel\AppData\Local\Temp\RtmpSYV47V\downloaded_packages
+## 	C:\Users\Sebastian Stenzel\AppData\Local\Temp\RtmpeupDRd\downloaded_packages
 ```
 
 ```r
@@ -408,4 +408,4 @@ Replacing missing values with mean interval values centralizes the distribution.
 
 ![plot of chunk unnamed-chunk-28](figure/unnamed-chunk-28.png) 
 
-Obviously during the week there is a high activitiy around 9 am when people are presumably on their way to work. The distribution for weekend activity in contrast in rather smooth in  comparison.
+Obviously during the week there is a high activitiy around 9 am when people are presumably on their way to work. The distribution for weekend activity in contrast is rather smooth in  comparison.

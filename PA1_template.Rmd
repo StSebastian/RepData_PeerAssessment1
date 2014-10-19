@@ -222,4 +222,4 @@ Replacing missing values with mean interval values centralizes the distribution.
     panel.xyplot(x,y,type="l")}) 
 ```
 
-Obviously during the week there is a high activitiy around 9 am when people are presumably on their way to work. The distribution for weekend activity in contrast in rather smooth in  comparison.
+Obviously during the week there is a high activitiy around 9 am when people are presumably on their way to work. The distribution for weekend activity in contrast is rather smooth in  comparison.
